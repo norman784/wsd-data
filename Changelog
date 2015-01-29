@@ -1,0 +1,25 @@
+﻿Change log
+===
+
+0.8 2015-01-27
+---
+- Added a simple cache
+
+0.7 2015-01-16
+---
+- Added GetProperties to Collection
+
+0.6.1 2015-01-13
+---
+- Now returns the object on Save
+- Fixed issue where Save not returning a Task
+- Fixed issue where Save not updating Collection.id
+
+0.6 2015-01-13
+---
+- Added custom Post/Get call on Collection
+- Removed Json.net in favor of using Response.Get<T>()
+
+0.5 2015-01-06
+---
+- Implemented Collection

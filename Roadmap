@@ -1,0 +1,9 @@
+﻿- Add Activerecord like functionality
+	- FindBy{Field} (if possible)
+	- Relations?
+- Add file support
+	- Images (jpg, png)
+	- Videos (mp4, mov)
+	- Text
+	- Binary
+	- Base
