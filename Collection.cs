@@ -7,6 +7,7 @@ using Humanizer;
 using PCLStorage;
 using System.IO;
 using System.Text;
+using Newtonsoft.Json;
 
 namespace WSD.Data
 {
@@ -69,7 +70,7 @@ namespace WSD.Data
 			return response;
 		}
 
-		public static async Task<S> CallPost<S>(string api, string id, Dictionary<string, object> data)
+		public static async Task<S> CallPost<S>(string api, string id = null, Dictionary<string, object> data = null)
 		{
 			Response response = await Client.Post (api, id, data);
 
@@ -78,7 +79,7 @@ namespace WSD.Data
 			return response.Get<S> ();
 		}
 
-		public static async Task<Response> CallPost(string api, string id, Dictionary<string, object> data)
+		public static async Task<Response> CallPost(string api, string id = null, Dictionary<string, object> data = null)
 		{
 			Response response = await Client.Post (api, id, data);
 
@@ -126,7 +127,9 @@ namespace WSD.Data
 
 			api += string.Format ("/{0}", CollectionName ());
 
-			Dictionary<string, object> data = GetProperties ();
+			Dictionary<string, object> data = JsonConvert.DeserializeObject<Dictionary<string, object>> (
+				JsonConvert.SerializeObject (this)
+	        );
 
 			response = await Client.Post(api, Id, data);
 
@@ -137,17 +140,7 @@ namespace WSD.Data
 			return response.Get<T> ();
 		}
 
-		public Dictionary<string, object> GetProperties()
-		{
-			return ObjectHelper.GetProperties (this);
-		}
-
-		public Dictionary<string, S> GetProperties<S>()
-		{
-			return ObjectHelper.GetProperties<S> (this);
-		}
-
-		public async void Delete()
+		public async Task<bool> Delete()
 		{
 			Response response = await Client.Delete (
 				string.Format("{0}/{1}", CollectionPath, CollectionName()),
@@ -155,6 +148,8 @@ namespace WSD.Data
 			);
 
 			CheckResponse (response);
+
+			return true;
 		}
 
 		static void CheckResponse (Response response)
