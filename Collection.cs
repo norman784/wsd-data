@@ -43,7 +43,7 @@ namespace WSD.Data
 				query
 			);
 
-			CheckResponse (response);
+			response.Check ();
 
 			if (cache) {
 				SetCache (key, response.Content);
@@ -56,7 +56,7 @@ namespace WSD.Data
 		{
 			Response response = await Client.Get (api, query);
 
-			CheckResponse (response);
+			response.Check ();
 
 			return response.Get<S> ();
 		}
@@ -65,7 +65,7 @@ namespace WSD.Data
 		{
 			Response response = await Client.Get (api, query);
 
-			CheckResponse (response);
+			response.Check ();
 
 			return response;
 		}
@@ -74,7 +74,7 @@ namespace WSD.Data
 		{
 			Response response = await Client.Post (api, id, data);
 
-			CheckResponse (response);
+			response.Check ();
 
 			return response.Get<S> ();
 		}
@@ -83,7 +83,7 @@ namespace WSD.Data
 		{
 			Response response = await Client.Post (api, id, data);
 
-			CheckResponse (response);
+			response.Check ();
 
 			return response;
 		}
@@ -107,7 +107,7 @@ namespace WSD.Data
 				string.Format("{0}/{1}/{2}", CollectionPath, CollectionName(), id)
 			);
 
-			CheckResponse (response);
+			response.Check ();
 
 			if (cache) {
 				SetCache (key, response.Content);
@@ -133,7 +133,7 @@ namespace WSD.Data
 
 			response = await Client.Post(api, Id, data);
 
-			CheckResponse (response);
+			response.Check ();
 
 			Id = response.GetString ("id");
 
@@ -147,24 +147,9 @@ namespace WSD.Data
 				Id
 			);
 
-			CheckResponse (response);
+			response.Check ();
 
 			return true;
-		}
-
-		static void CheckResponse (Response response)
-		{
-			if (response == null) {
-				throw new Exception("Unkown exception: response was null");
-			} else if (response.Content == null) {
-				throw new Exception("Unkown exception: response content was null");
-			} else if (response.StatusCode != HttpStatusCode.OK) {
-				throw new Exception(string.Format(
-					"Exception: ({0}) {1}", 
-					response.GetErrorCode(), 
-					response.GetErrorMessage ()
-				));
-			}
 		}
 
 		static private async void SetCache (string key, string content)
