@@ -127,9 +127,7 @@ namespace WSD.Data
 
 			api += string.Format ("/{0}", CollectionName ());
 
-			Dictionary<string, object> data = JsonConvert.DeserializeObject<Dictionary<string, object>> (
-				JsonConvert.SerializeObject (this)
-	        );
+			Dictionary<string, object> data = GetProperties ();
 
 			response = await Client.Post(api, Id, data);
 
@@ -150,6 +148,13 @@ namespace WSD.Data
 			response.Check ();
 
 			return true;
+		}
+
+		public Dictionary<string, object> GetProperties ()
+		{
+			return JsonConvert.DeserializeObject<Dictionary<string, object>> (
+				JsonConvert.SerializeObject (this)
+			);
 		}
 
 		static private async void SetCache (string key, string content)
