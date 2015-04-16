@@ -7,7 +7,8 @@ using Humanizer;
 using PCLStorage;
 using System.IO;
 using System.Text;
-using Newtonsoft.Json;
+using System.Reflection;
+using System.Collections;
 
 namespace WSD.Data
 {
@@ -150,11 +151,50 @@ namespace WSD.Data
 			return true;
 		}
 
-		public Dictionary<string, object> GetProperties ()
+		public Dictionary<string, object> GetProperties (object obj = null)
 		{
-			return JsonConvert.DeserializeObject<Dictionary<string, object>> (
-				JsonConvert.SerializeObject (this)
-			);
+			if (obj == null) obj = this;
+
+			IEnumerable<PropertyInfo> properties = obj.GetType ().GetRuntimeProperties ();
+
+			Dictionary<string, object> data = new Dictionary<string, object> ();
+
+			var enumerator = properties.GetEnumerator ();
+
+			while (enumerator.MoveNext ()) {
+				PropertyInfo property = enumerator.Current;
+				object value = property.GetValue (obj);
+
+				if (value is IList) {
+					List<object> _data = new List<object> ();
+
+					foreach (object _obj in value as IList) {
+						if (_obj is File) {
+							_data.Add (_obj);
+						} else {
+							_data.Add (GetProperties (_obj));
+						}
+					}
+
+					data.Add (property.Name, _data);
+				} else if (value is IDictionary) {
+					Dictionary<string, object> _data = new Dictionary<string, object> ();
+
+					foreach (KeyValuePair<string, object> _obj in value as IDictionary) {
+						if (_obj.Value is File) {
+							_data.Add (_obj.Key, _obj.Value);
+						} else {
+							_data.Add (_obj.Key, GetProperties (_obj.Value));
+						}
+					}
+
+					data.Add (property.Name, _data);
+				} else {
+					data.Add (property.Name, value);
+				}
+			}
+
+			return data;
 		}
 
 		static private async void SetCache (string key, string content)
