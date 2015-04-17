@@ -13,7 +13,7 @@ using System.Collections;
 namespace WSD.Data
 {
 	#pragma warning disable 0219, 0649
-	public class Collection<T>
+	public class Collection<T> : ICollection
 	{
 		public string Id { get; set; }
 		public static string FieldId = "id";
@@ -189,6 +189,8 @@ namespace WSD.Data
 					}
 
 					data.Add (property.Name, _data);
+				} else if (value is WSD.Data.ICollection) {
+					data.Add (property.Name, GetProperties (value));
 				} else {
 					data.Add (property.Name, value);
 				}
